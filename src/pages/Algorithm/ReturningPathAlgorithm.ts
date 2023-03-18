@@ -149,7 +149,6 @@ export default function ReturningPathAlgorithm(
       nowPath = [];
     }
   }
-  console.log(dist);
   let allTime = [];
   let allLoad = [];
   for (let i = 0; i < paths.length; i++) {

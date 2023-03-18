@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import React from "react";
 import "./styles.css";
 import { Point, Edge, Graph } from "../graphType";
@@ -130,6 +130,7 @@ function MyCanvas() {
   const [start, setStart] = useState<boolean>(false);
 
   const [resultFloyd, setResultFloyd] = useState<number[][]>([]);
+
   const [matrixFloyd, setMatrixFloyd] = useState<number[][]>([]);
 
   const [showPath, setShowPath] = useState<number[]>([]);
@@ -186,7 +187,6 @@ function MyCanvas() {
       }
     }
   };
-  console.log("re-render: ", matrixFloyd);
 
   const addEdge = () => {
     if (
@@ -295,7 +295,6 @@ function MyCanvas() {
   }, [graph.points, graph.edges, showPath]);
 
   const calculateFloyd = () => {
-    console.log("calculate Floyd");
     if (graph.points.length > 0) {
       let { dist, arr } = Floyd(graph);
       setResultFloyd(arr);
@@ -342,8 +341,7 @@ function MyCanvas() {
 
   const runReturningPathAlgorithm = () => {
     if (maxTime === 0 || maxStudent === 0) {
-      setMessage("Please enter limit load and time");
-      return;
+      alert("Please enter limit load and time");
     } else {
       let check = false;
       let n = graph.points.length;
@@ -354,18 +352,16 @@ function MyCanvas() {
         }
       }
       if (check) {
-        setMessage(
-          "Please add students to all vertices except the starting point"
-        );
+        alert("Please add students to all vertices except the starting point");
       } else {
-        if (matrixFloyd.length > 0) {
+        if (resultFloyd) {
+          console.log(matrixFloyd);
           const { paths, allTime, allLoad } = ReturningPathAlgorithm(
             graph,
             maxTime,
             maxStudent,
-            matrixFloyd
+            [...matrixFloyd]
           );
-          console.log(matrixFloyd);
           let s: string = "(Algorithms of reports) \n The routes are: \n";
           for (let i = 0; i < paths.length; i++) {
             s +=
@@ -376,7 +372,8 @@ function MyCanvas() {
           }
           setMessage(s);
         } else {
-          setMessage("Please calculate Floyd");
+          alert("Please calculate Floyd");
+          return;
         }
       }
     }
@@ -428,16 +425,19 @@ function MyCanvas() {
     setGraph(graph1);
     setMaxStudent(limit1.loadLimit);
     setMaxTime(limit1.timeLimit);
+    setMessage("Run test 1");
   };
   const runtest2 = () => {
     setGraph(graph2);
     setMaxStudent(limit2.loadLimit);
     setMaxTime(limit2.timeLimit);
+    setMessage("Run test 2");
   };
   const runtest3 = () => {
     setGraph(graph3);
     setMaxStudent(limit3.loadLimit);
     setMaxTime(limit3.timeLimit);
+    setMessage("Run test 3");
   };
 
   return (
@@ -582,6 +582,8 @@ function MyCanvas() {
             </label>
           </div>
           <button onClick={calculateFloyd}>Calculate Floyd</button>
+
+          <div></div>
 
           <button onClick={runReturningPathAlgorithm}>
             Run returning path
