@@ -1,14 +1,13 @@
-import { group } from "console";
+//import { group } from "console";
 import { Point, Edge, Graph, PVEdge } from "../graphType";
 import Floyd, { traceRoute } from "./Floyd";
 
 export default function Greedy(
   graph: Graph,
   timeLimit: number,
-  loadLimit: number
+  loadLimit: number,
+  dist: number[][]
 ) {
-  const { dist, arr } = Floyd(graph);
-  console.log(dist);
   const { points } = graph;
   let n = points.length;
   const paths: number[][] = [];
@@ -29,13 +28,11 @@ export default function Greedy(
     sortEdgeConnect[i] = [...ar];
     sortEdgeConnect[i].sort((a: number, b: number) => dist[i][a] - dist[i][b]);
   }
-  console.log(sortEdgeConnect);
   for (let i = 1; i < n; i++) {
     let firstPoint = sortEdgeConnect[1][i];
     if (visit[firstPoint]) {
       continue;
     } else {
-      console.group("first point: " + firstPoint);
       path.push(firstPoint);
       timeNow += 2 * dist[1][firstPoint];
       loadNow += points[firstPoint - 1].numberOfStudent;
@@ -43,14 +40,10 @@ export default function Greedy(
 
       while (timeNow <= timeLimit && loadNow <= loadLimit) {
         let nowPoint = path[path.length - 1];
-        console.log("now point: " + nowPoint);
         let noMorePoint = true;
         for (let j = 1; j <= n - 1; j++) {
           let nextMaybePoint = sortEdgeConnect[nowPoint][j];
-          console.log("next maybe point: " + nextMaybePoint);
           if (nextMaybePoint && !visit[nextMaybePoint]) {
-            console.log("next point: " + nextMaybePoint);
-
             let timeCheck =
               timeNow +
               dist[nowPoint][nextMaybePoint] +
@@ -70,17 +63,28 @@ export default function Greedy(
           }
         }
         if (noMorePoint) {
-          console.log("no more point");
           break;
         }
       }
+      path.unshift(1);
+      path.push(1);
       paths.push(path);
       path = [];
       timeNow = 0;
       loadNow = 0;
-      console.groupEnd();
     }
   }
-  console.log(paths);
-  return paths;
+  let allTime = [];
+  let allLoad = [];
+  for (let i = 0; i < paths.length; i++) {
+    let time = 0;
+    let load = 0;
+    for (let j = 0; j < paths[i].length - 1; j++) {
+      time += dist[paths[i][j]][paths[i][j + 1]];
+      load += points[paths[i][j] - 1].numberOfStudent;
+    }
+    allTime.push(time);
+    allLoad.push(load);
+  }
+  return { paths, allTime, allLoad };
 }

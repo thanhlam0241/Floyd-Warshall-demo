@@ -5,6 +5,16 @@ import { Point, Edge, Graph } from "../graphType";
 import Floyd, { traceRoute } from "../Algorithm/Floyd";
 import ReturningPathAlgorithm from "../Algorithm/ReturningPathAlgorithm";
 import Greedy from "../Algorithm/Greedy";
+
+import {
+  graph1,
+  graph2,
+  limit1,
+  limit2,
+  graph3,
+  limit3,
+} from "../Testcase/test";
+
 const drawPoint = (
   context: CanvasRenderingContext2D,
   point: Point,
@@ -93,17 +103,11 @@ function drawArrowLine(
   ctx.lineTo(x2p, y2p);
   ctx.stroke();
   if (label !== 0) {
-    // let a = getQuadraticCurvePoint(startX, startY, midX, midY, endX, endY, 0.5);
     ctx.font = " 18px Arial";
     ctx.fillStyle = "red";
     ctx.textAlign = "left";
     ctx.fillText(label.toString(), midX, midY);
   }
-  // ctx.beginPath();
-  // ctx.moveTo(startX, startY);
-  // ctx.quadraticCurveTo(midLabelX, midLabelY, endX, endY);
-  // ctx.stroke();
-  // draw arrow
 }
 
 const SIZE = 10;
@@ -124,8 +128,10 @@ const checkPoint = (points: Point[], x: number, y: number) => {
 function MyCanvas() {
   const myCanvas = useRef<HTMLCanvasElement | null>(null);
   const [start, setStart] = useState<boolean>(false);
+
   const [resultFloyd, setResultFloyd] = useState<number[][]>([]);
   const [matrixFloyd, setMatrixFloyd] = useState<number[][]>([]);
+
   const [showPath, setShowPath] = useState<number[]>([]);
   //students
   const [numberOfStudent, setNumberOfStudent] = useState<number>(0);
@@ -180,6 +186,7 @@ function MyCanvas() {
       }
     }
   };
+  console.log("re-render: ", matrixFloyd);
 
   const addEdge = () => {
     if (
@@ -274,7 +281,7 @@ function MyCanvas() {
             const indexB = showPath.indexOf(b);
             const check = Math.abs(indexA - indexB);
             if (check === 1) {
-              drawLine(a, b, graph.edges[i].weight, "red", context);
+              drawLine(a, b, graph.edges[i].weight, "blue", context);
             } else {
               drawLine(a, b, graph.edges[i].weight, "black", context);
             }
@@ -288,6 +295,7 @@ function MyCanvas() {
   }, [graph.points, graph.edges, showPath]);
 
   const calculateFloyd = () => {
+    console.log("calculate Floyd");
     if (graph.points.length > 0) {
       let { dist, arr } = Floyd(graph);
       setResultFloyd(arr);
@@ -350,17 +358,26 @@ function MyCanvas() {
           "Please add students to all vertices except the starting point"
         );
       } else {
-        const paths = ReturningPathAlgorithm(graph, maxTime, maxStudent);
-        let s: string = "(Algorithms of reports) \n The routes are: \n";
-        for (let i = 0; i < paths.length; i++) {
-          s +=
-            `Route ${i + 1}: ` +
-            " 1-> " +
-            paths[i].join(" -> ") +
-            " -> 1" +
-            "\n";
+        if (matrixFloyd.length > 0) {
+          const { paths, allTime, allLoad } = ReturningPathAlgorithm(
+            graph,
+            maxTime,
+            maxStudent,
+            matrixFloyd
+          );
+          console.log(matrixFloyd);
+          let s: string = "(Algorithms of reports) \n The routes are: \n";
+          for (let i = 0; i < paths.length; i++) {
+            s +=
+              `Route ${i + 1}: ` +
+              paths[i].join(" -> ") +
+              `\n Time: ${allTime[i]}, Students: ${allLoad[i]}` +
+              "\n ------------------------- \n";
+          }
+          setMessage(s);
+        } else {
+          setMessage("Please calculate Floyd");
         }
-        setMessage(s);
       }
     }
   };
@@ -383,19 +400,44 @@ function MyCanvas() {
           "Please add students to all vertices except the starting point"
         );
       } else {
-        const paths = Greedy(graph, maxTime, maxStudent);
-        let s: string = "(Greedy)The routes are: \n";
-        for (let i = 0; i < paths.length; i++) {
-          s +=
-            `Route ${i + 1}: ` +
-            " 1-> " +
-            paths[i].join(" -> ") +
-            " -> 1" +
-            "\n";
+        if (matrixFloyd.length > 0) {
+          const { paths, allTime, allLoad } = Greedy(
+            graph,
+            maxTime,
+            maxStudent,
+            matrixFloyd
+          );
+          let s: string = "(Greedy)The routes are: \n";
+          for (let i = 0; i < paths.length; i++) {
+            s +=
+              `Route ${i + 1}: ` +
+              paths[i].join(" -> ") +
+              `\n Time: ${allTime[i]}, Students: ${allLoad[i]}` +
+              "\n ------------------------- \n";
+          }
+          setMessage2(s);
+        } else {
+          alert("Please run Floyd algorithm");
+          return;
         }
-        setMessage2(s);
       }
     }
+  };
+
+  const runtest1 = () => {
+    setGraph(graph1);
+    setMaxStudent(limit1.loadLimit);
+    setMaxTime(limit1.timeLimit);
+  };
+  const runtest2 = () => {
+    setGraph(graph2);
+    setMaxStudent(limit2.loadLimit);
+    setMaxTime(limit2.timeLimit);
+  };
+  const runtest3 = () => {
+    setGraph(graph3);
+    setMaxStudent(limit3.loadLimit);
+    setMaxTime(limit3.timeLimit);
   };
 
   return (
@@ -512,6 +554,11 @@ function MyCanvas() {
             </label>
             <button onClick={addStudents}>Add</button>
           </div>
+          <div>
+            <button onClick={runtest1}>Test 1</button>
+            <button onClick={runtest2}>Test 2</button>
+            <button onClick={runtest3}>Test 3</button>
+          </div>
         </div>
         <div className="run">
           <div className="calculalte">
@@ -534,9 +581,7 @@ function MyCanvas() {
               />
             </label>
           </div>
-          <button className="button-normal" onClick={calculateFloyd}>
-            Calculate Floyd
-          </button>
+          <button onClick={calculateFloyd}>Calculate Floyd</button>
 
           <button onClick={runReturningPathAlgorithm}>
             Run returning path

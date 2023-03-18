@@ -10,20 +10,23 @@ export function traceRoute(arr: number[][], start: number, end: number) {
 }
 
 export default function Floyd(graph: Graph) {
+  console.log("calculate floyd");
   let { points, edges } = graph;
-  let n = points.length;
-  var arr = new Array(n + 1);
-  for (var i = 1; i <= n; i++) {
+  const n = points.length;
+  const arr = new Array(n + 1).fill(0);
+  for (let i = 1; i <= n; i++) {
     arr[i] = new Array(n + 1).fill(0);
   }
-  let dist = new Array(n + 1);
-  const INF_LENGTH = edges.reduce((acc, cur) => acc + cur.weight, 0);
+  const dist = new Array(n + 1);
+  const INF_LENGTH: number = 999;
   for (let i = 1; i <= n; i++) {
     dist[i] = new Array(n + 1);
+    dist[i][0] = i;
     for (let j = 1; j <= n; j++) {
       dist[i][j] = i === j ? 0 : INF_LENGTH;
     }
   }
+  console.log(dist);
   for (let i = 0; i < edges.length; i++) {
     let { pointOne, pointTwo, weight } = edges[i];
     dist[pointOne][pointTwo] = weight;
@@ -31,6 +34,7 @@ export default function Floyd(graph: Graph) {
     arr[pointOne][pointTwo] = pointTwo;
     arr[pointTwo][pointOne] = pointOne;
   }
+  //console.log(dist);
   for (let k = 1; k <= n; k++) {
     for (let i = 1; i <= n; i++) {
       for (let j = 1; j <= n; j++) {
@@ -41,6 +45,7 @@ export default function Floyd(graph: Graph) {
       }
     }
   }
+  console.log(dist);
   return {
     dist,
     arr,
