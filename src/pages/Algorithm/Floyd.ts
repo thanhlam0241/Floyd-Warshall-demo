@@ -1,5 +1,14 @@
 import { Point, Edge, Graph } from "../graphType";
 
+export function traceRoute(arr: number[][], start: number, end: number) {
+  let path = [start];
+  while (start !== end) {
+    start = arr[start][end];
+    path.push(start);
+  }
+  return path;
+}
+
 export default function Floyd(graph: Graph) {
   let { points, edges } = graph;
   let n = points.length;
@@ -32,8 +41,6 @@ export default function Floyd(graph: Graph) {
       }
     }
   }
-  console.log(arr);
-  console.log(dist);
   return {
     dist,
     arr,

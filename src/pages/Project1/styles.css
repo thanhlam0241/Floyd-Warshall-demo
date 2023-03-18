@@ -7,7 +7,7 @@
 .container {
   display: flex;
   flex-direction: row;
-  gap: 10px;
+  gap: 0px;
   justify-content: space-around;
 }
 
@@ -15,6 +15,7 @@
   display: flex;
   flex-direction: row;
   gap: 10px;
+  justify-content: space-between;
 }
 .btn-container {
   display: flex;
@@ -38,12 +39,12 @@
   color: white;
   border-radius: 4px;
 }
-.console {
+/* .console {
   width: 900px;
   background-color: rgb(0, 0, 0);
   color: white;
   border: 1px solid #e7e5e5;
-}
+} */
 .canvas {
   border: 1px solid #000000;
   cursor: crosshair;
@@ -75,6 +76,52 @@ input {
   padding: 5px;
   overflow-y: scroll;
 }
+
+.list-student {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #000000;
+  padding: 2px;
+  overflow-y: scroll;
+}
+
+.calculalte {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.run {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.label-input {
+  position: relative;
+  width: 300px;
+}
+.label-input input {
+  width: 60px;
+  position: absolute;
+  right: 0;
+}
+/* .label span {
+  position: absolute;
+  left: 0;
+} */
+.console {
+  background-color: #000000;
+  color: #ffffff;
+  width: 300px;
+}
+p {
+  white-space: pre-line;
+  text-indent: 10px;
+}
+
+/* label > input {
+  float: right;
+} */
+
 th,
 td {
   margin: 1px;
